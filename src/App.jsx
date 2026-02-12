@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, ChefHat, Clock, Filter, ChevronLeft, Loader } from 'lucide-react';
+import backgroundVideo from './background-video.mp4';
 
 export default function RecipeTransformer() {
   const [view, setView] = useState('search'); // 'search', 'results', 'detail'
@@ -191,18 +192,19 @@ export default function RecipeTransformer() {
 
   return (
     <div className="min-h-screen relative bg-slate-50">
-      {/* Optional background video: set src to your video (e.g. /background-video.mp4) */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      {/* Looping background video with slight opacity */}
+      <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-[0.12]"
-          src="/background-video.mp4"
+          className="absolute inset-0 w-full h-full object-cover bg-slate-100"
+          style={{ opacity: 0.82 }}
+          src={backgroundVideo}
           aria-hidden
         />
-        <div className="absolute inset-0 bg-slate-50/90" aria-hidden />
+        <div className="absolute inset-0 bg-slate-50/88" aria-hidden />
       </div>
 
       {/* Header */}
@@ -230,33 +232,33 @@ export default function RecipeTransformer() {
         {view === 'search' && (
           <div className="space-y-8 animate-fadeIn">
             {/* Ingredients Search Input */}
-            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-              <label className="block text-sm font-semibold text-slate-900 mb-3">
+            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+              <label className="block text-sm font-semibold text-gray-900 mb-3">
                 What ingredients do you have?
               </label>
               <div className="relative">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
                 <input
                   type="text"
                   value={ingredientsQuery}
                   onChange={(e) => setIngredientsQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && searchByIngredients()}
                   placeholder="e.g. chicken, garlic, rice, tomatoes"
-                  className="w-full pl-11 pr-4 py-3 text-slate-900 placeholder:text-slate-400 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none bg-white transition-colors"
+                  className="w-full pl-11 pr-4 py-3 text-gray-900 placeholder:text-gray-400 border border-gray-300 rounded-lg focus:border-[var(--color-sage)] focus:ring-2 focus:ring-[var(--color-sage)]/20 focus:outline-none bg-white transition-colors"
                 />
               </div>
-              <p className="text-xs text-slate-500 mt-2">
+              <p className="text-xs text-gray-500 mt-2">
                 Comma-separated. We'll find recipes that use as many as possible.
               </p>
             </div>
 
             {/* Diet & Options */}
-            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-              <h3 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                <Filter className="w-4 h-4 text-slate-500" />
+            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Filter className="w-4 h-4 text-gray-500" />
                 Diet
               </h3>
-              <p className="text-xs text-slate-500 mb-3">
+              <p className="text-xs text-gray-500 mb-3">
                 Optional. One or more.
               </p>
               <div className="flex flex-wrap gap-2 mb-6">
@@ -267,21 +269,21 @@ export default function RecipeTransformer() {
                     onClick={() => toggleDiet(diet)}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                       selectedDiets.includes(diet)
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                        ? 'bg-[var(--color-sage)] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
                     }`}
                   >
                     {diet}
                   </button>
                 ))}
               </div>
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">
                 Cuisine
               </h3>
               <select
                 value={selectedCuisine}
                 onChange={(e) => setSelectedCuisine(e.target.value)}
-                className="w-full max-w-md px-3 py-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none bg-white text-slate-900 text-sm mb-6"
+                className="w-full max-w-md px-3 py-2.5 border border-gray-300 rounded-lg focus:border-[var(--color-sage)] focus:ring-2 focus:ring-[var(--color-sage)]/20 focus:outline-none bg-white text-gray-900 text-sm mb-6"
               >
                 {cuisineOptions.map((cuisine) => (
                   <option key={cuisine || 'any'} value={cuisine}>
@@ -289,10 +291,10 @@ export default function RecipeTransformer() {
                   </option>
                 ))}
               </select>
-              <h3 className="text-sm font-semibold text-slate-900 mb-3">
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">
                 Intolerances
               </h3>
-              <p className="text-xs text-slate-500 mb-3">
+              <p className="text-xs text-gray-500 mb-3">
                 Optional. Exclude these.
               </p>
               <div className="flex flex-wrap gap-2 mb-6">
@@ -303,8 +305,8 @@ export default function RecipeTransformer() {
                     onClick={() => toggleIntolerance(intolerance)}
                     className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                       selectedIntolerances.includes(intolerance)
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-200'
+                        ? 'bg-[var(--color-sage)] text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200'
                     }`}
                   >
                     {intolerance}
@@ -312,17 +314,17 @@ export default function RecipeTransformer() {
                 ))}
               </div>
               <div className="space-y-4">
-                <label className="flex items-center gap-2 cursor-pointer text-sm text-slate-700">
+                <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
                   <input
                     type="checkbox"
                     checked={ignorePantry}
                     onChange={(e) => setIgnorePantry(e.target.checked)}
-                    className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    className="rounded border-gray-300 text-[var(--color-sage)] focus:ring-[var(--color-sage)]"
                   />
                   Ignore pantry staples (salt, water, flour, etc.)
                 </label>
                 <div>
-                  <label className="block text-sm font-semibold text-slate-900 mb-2">
+                  <label className="block text-sm font-semibold text-gray-900 mb-2">
                     Ingredients to ignore
                   </label>
                   <input
@@ -330,9 +332,9 @@ export default function RecipeTransformer() {
                     value={excludeIngredientsQuery}
                     onChange={(e) => setExcludeIngredientsQuery(e.target.value)}
                     placeholder="e.g. nuts, shellfish, mushrooms"
-                    className="w-full px-3 py-2.5 border border-slate-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none bg-white text-slate-900 text-sm"
+                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg focus:border-[var(--color-sage)] focus:ring-2 focus:ring-[var(--color-sage)]/20 focus:outline-none bg-white text-gray-900 text-sm"
                   />
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     Comma-separated.
                   </p>
                 </div>
@@ -343,7 +345,7 @@ export default function RecipeTransformer() {
             <button
               onClick={searchByIngredients}
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3.5 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[var(--color-sage)] hover:bg-[var(--color-sage-dark)] text-white py-3.5 rounded-lg font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -369,16 +371,16 @@ export default function RecipeTransformer() {
             {/* Results Header */}
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-bold text-slate-900">
+                <h2 className="text-xl font-bold text-gray-900">
                   {totalResults} recipes
                 </h2>
-                <p className="text-slate-500 text-sm mt-0.5">
+                <p className="text-gray-500 text-sm mt-0.5">
                   Click a card for full recipe and nutrition
                 </p>
               </div>
               <button
                 onClick={() => setView('search')}
-                className="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 rounded-lg font-medium text-sm border border-slate-300 hover:bg-slate-50 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg font-medium text-sm border border-gray-300 hover:bg-gray-50 transition-colors"
               >
                 <ChevronLeft className="w-4 h-4" />
                 New Search
@@ -388,7 +390,7 @@ export default function RecipeTransformer() {
             {/* Recipe Grid */}
             {loading ? (
               <div className="flex items-center justify-center py-20">
-                <Loader className="w-8 h-8 text-indigo-600 animate-spin" />
+                <Loader className="w-8 h-8 text-[var(--color-sage)] animate-spin" />
               </div>
             ) : (
               <>
@@ -397,10 +399,10 @@ export default function RecipeTransformer() {
                     <div
                       key={recipe.id}
                       onClick={() => viewRecipeDetail(recipe.id)}
-                      className="bg-white rounded-xl overflow-hidden cursor-pointer border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition-all group"
+                      className="bg-white rounded-xl overflow-hidden cursor-pointer border border-gray-200 shadow-sm hover:shadow-md hover:border-gray-300 transition-all group"
                       style={{ animationDelay: `${index * 50}ms` }}
                     >
-                      <div className="relative h-40 overflow-hidden bg-slate-100">
+                      <div className="relative h-40 overflow-hidden bg-gray-100">
                         {recipe.image ? (
                           <img
                             src={recipe.image}
@@ -409,22 +411,22 @@ export default function RecipeTransformer() {
                           />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
-                            <ChefHat className="w-12 h-12 text-slate-300" />
+                            <ChefHat className="w-12 h-12 text-gray-300" />
                           </div>
                         )}
                       </div>
                       <div className="p-4">
-                        <h3 className="font-semibold text-slate-900 text-sm line-clamp-2 mb-2">
+                        <h3 className="font-semibold text-gray-900 text-sm line-clamp-2 mb-2">
                           {recipe.title}
                         </h3>
                         <div className="flex flex-wrap items-center gap-2 text-xs">
                           {(typeof recipe.usedIngredientCount === 'number' || (recipe.usedIngredients && recipe.usedIngredients.length > 0)) && (
-                            <span className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-medium">
+                            <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded font-medium">
                               Used: {typeof recipe.usedIngredientCount === 'number' ? recipe.usedIngredientCount : recipe.usedIngredients.length}
                             </span>
                           )}
                           {(typeof recipe.missedIngredientCount === 'number' || (recipe.missedIngredients && recipe.missedIngredients.length > 0)) && (
-                            <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">
+                            <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-medium">
                               Missing: {typeof recipe.missedIngredientCount === 'number' ? recipe.missedIngredientCount : recipe.missedIngredients.length}
                             </span>
                           )}
@@ -444,15 +446,15 @@ export default function RecipeTransformer() {
             {/* Back Button */}
             <button
               onClick={() => setView('results')}
-              className="flex items-center gap-2 px-4 py-2 bg-white text-slate-700 rounded-lg font-medium text-sm border border-slate-300 hover:bg-slate-50 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-white text-gray-700 rounded-lg font-medium text-sm border border-gray-300 hover:bg-gray-50 transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
               Back to Results
             </button>
 
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
               {/* Recipe Header */}
-              <div className="relative h-72 bg-slate-100">
+              <div className="relative h-72 bg-gray-100">
                 {selectedRecipe.image ? (
                   <img
                     src={selectedRecipe.image}
@@ -461,10 +463,10 @@ export default function RecipeTransformer() {
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
-                    <ChefHat className="w-20 h-20 text-slate-300" />
+                    <ChefHat className="w-20 h-20 text-gray-300" />
                   </div>
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
                   <h1 className="text-2xl font-bold text-white mb-3">
                     {selectedRecipe.title}
@@ -560,7 +562,7 @@ export default function RecipeTransformer() {
                           <div className="text-base font-bold text-indigo-600">
                             {Number.isInteger(nutrient.amount) ? nutrient.amount : Math.round(nutrient.amount * 10) / 10}{nutrient.unit}
                           </div>
-                          <div className="text-xs text-slate-500 mt-0.5">{nutrient.name}</div>
+                          <div className="text-xs text-gray-500 mt-0.5">{nutrient.name}</div>
                         </div>
                       ))}
                     </div>
@@ -573,7 +575,7 @@ export default function RecipeTransformer() {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 mt-16 py-6 bg-slate-900 text-slate-400 text-center border-t border-slate-800">
+      <footer className="relative z-10 mt-16 py-6 bg-gray-900 text-gray-400 text-center border-t border-gray-800">
         <p className="text-sm">
           Powered by Spoonacular API
         </p>
