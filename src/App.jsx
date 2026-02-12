@@ -5,6 +5,9 @@ export default function RecipeTransformer() {
   const [view, setView] = useState('search'); // 'search', 'results', 'detail'
   const [ingredientsQuery, setIngredientsQuery] = useState('');
   const [ignorePantry, setIgnorePantry] = useState(true);
+  const [excludeIngredientsQuery, setExcludeIngredientsQuery] = useState('');
+  const [selectedDiets, setSelectedDiets] = useState([]);
+  const [selectedIntolerances, setSelectedIntolerances] = useState([]);
   const [recipes, setRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [totalResults, setTotalResults] = useState(0);
@@ -12,6 +15,69 @@ export default function RecipeTransformer() {
   const [error, setError] = useState('');
 
   const RESULTS_PER_PAGE = 20;
+
+  const dietOptions = [
+    'Gluten Free',
+    'Ketogenic',
+    'Vegetarian',
+    'Lacto-Vegetarian',
+    'Ovo-Vegetarian',
+    'Vegan',
+    'Pescetarian',
+    'Paleo',
+    'Primal',
+    'Low FODMAP',
+    'Whole30',
+  ];
+
+  const dietToApiValue = (label) => {
+    const map = {
+      'Gluten Free': 'gluten free',
+      'Ketogenic': 'ketogenic',
+      'Vegetarian': 'vegetarian',
+      'Lacto-Vegetarian': 'lacto-vegetarian',
+      'Ovo-Vegetarian': 'ovo-vegetarian',
+      'Vegan': 'vegan',
+      'Pescetarian': 'pescetarian',
+      'Paleo': 'paleo',
+      'Primal': 'primal',
+      'Low FODMAP': 'low fodmap',
+      'Whole30': 'whole30',
+    };
+    return map[label] || label.toLowerCase();
+  };
+
+  const intoleranceOptions = [
+    'Dairy',
+    'Egg',
+    'Gluten',
+    'Grain',
+    'Peanut',
+    'Seafood',
+    'Sesame',
+    'Shellfish',
+    'Soy',
+    'Sulfite',
+    'Tree Nut',
+    'Wheat',
+  ];
+
+  const intoleranceToApiValue = (label) =>
+    label.toLowerCase().replace(/\s+/g, ' ').trim();
+
+  const toggleDiet = (diet) => {
+    setSelectedDiets((prev) =>
+      prev.includes(diet) ? prev.filter((d) => d !== diet) : [...prev, diet]
+    );
+  };
+
+  const toggleIntolerance = (intolerance) => {
+    setSelectedIntolerances((prev) =>
+      prev.includes(intolerance)
+        ? prev.filter((i) => i !== intolerance)
+        : [...prev, intolerance]
+    );
+  };
 
   const searchByIngredients = async () => {
     const trimmed = ingredientsQuery.trim();
@@ -29,6 +95,15 @@ export default function RecipeTransformer() {
         number: String(RESULTS_PER_PAGE),
         ignorePantry: String(ignorePantry),
       });
+      if (selectedDiets.length > 0) {
+        params.set('diet', selectedDiets.map(dietToApiValue).join(','));
+      }
+      if (selectedIntolerances.length > 0) {
+        params.set('intolerances', selectedIntolerances.map(intoleranceToApiValue).join(','));
+      }
+      if (excludeIngredientsQuery.trim()) {
+        params.set('excludeIngredients', excludeIngredientsQuery.trim());
+      }
       const response = await fetch(`/api/recipes/by-ingredients?${params.toString()}`);
 
       if (!response.ok) {
@@ -37,11 +112,12 @@ export default function RecipeTransformer() {
       }
 
       const data = await response.json();
-      const list = Array.isArray(data) ? data : [];
+      const list = Array.isArray(data) ? data : (data.results || []);
+      const total = data.totalResults ?? list.length;
 
       if (list.length > 0) {
         setRecipes(list);
-        setTotalResults(list.length);
+        setTotalResults(total);
         setView('results');
       } else {
         setError('No recipes found for these ingredients. Try adding or changing ingredients.');
@@ -122,21 +198,82 @@ export default function RecipeTransformer() {
               </p>
             </div>
 
-            {/* Options */}
+            {/* Diet & Options */}
             <div className="bg-white rounded-2xl shadow-xl p-8">
               <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Georgia, serif' }}>
                 <Filter className="w-6 h-6 text-orange-600" />
-                Options
+                Diet
               </h3>
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={ignorePantry}
-                  onChange={(e) => setIgnorePantry(e.target.checked)}
-                  className="w-5 h-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
-                />
-                <span className="text-gray-700">Ignore pantry staples (salt, water, flour, etc.)</span>
-              </label>
+              <p className="text-sm text-gray-600 mb-4">
+                Optional. Select one or more diets to filter recipes (e.g. Vegetarian, Vegan).
+              </p>
+              <div className="flex flex-wrap gap-3 mb-8">
+                {dietOptions.map((diet) => (
+                  <button
+                    key={diet}
+                    type="button"
+                    onClick={() => toggleDiet(diet)}
+                    className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all ${
+                      selectedDiets.includes(diet)
+                        ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {diet}
+                  </button>
+                ))}
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Georgia, serif' }}>
+                Intolerances
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Optional. Exclude ingredients you need to avoid (e.g. Dairy, Gluten, Nuts).
+              </p>
+              <div className="flex flex-wrap gap-3 mb-8">
+                {intoleranceOptions.map((intolerance) => (
+                  <button
+                    key={intolerance}
+                    type="button"
+                    onClick={() => toggleIntolerance(intolerance)}
+                    className={`px-4 py-2.5 rounded-full text-sm font-medium transition-all ${
+                      selectedIntolerances.includes(intolerance)
+                        ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {intolerance}
+                  </button>
+                ))}
+              </div>
+              <h4 className="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wide">
+                Other options
+              </h4>
+              <div className="space-y-4">
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={ignorePantry}
+                    onChange={(e) => setIgnorePantry(e.target.checked)}
+                    className="w-5 h-5 rounded border-gray-300 text-orange-600 focus:ring-orange-500"
+                  />
+                  <span className="text-gray-700">Ignore pantry staples (salt, water, flour, etc.)</span>
+                </label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ingredients to ignore
+                  </label>
+                  <input
+                    type="text"
+                    value={excludeIngredientsQuery}
+                    onChange={(e) => setExcludeIngredientsQuery(e.target.value)}
+                    placeholder="e.g. nuts, shellfish, mushrooms"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition-all"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Comma-separated. Recipes containing these will be excluded.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Search Button */}
@@ -219,14 +356,14 @@ export default function RecipeTransformer() {
                           {recipe.title}
                         </h3>
                         <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
-                          {typeof recipe.usedIngredientCount === 'number' && (
+                          {(typeof recipe.usedIngredientCount === 'number' || (recipe.usedIngredients && recipe.usedIngredients.length > 0)) && (
                             <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full font-medium">
-                              Used: {recipe.usedIngredientCount}
+                              Used: {typeof recipe.usedIngredientCount === 'number' ? recipe.usedIngredientCount : recipe.usedIngredients.length}
                             </span>
                           )}
-                          {typeof recipe.missedIngredientCount === 'number' && (
+                          {(typeof recipe.missedIngredientCount === 'number' || (recipe.missedIngredients && recipe.missedIngredients.length > 0)) && (
                             <span className="bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-medium">
-                              Missing: {recipe.missedIngredientCount}
+                              Missing: {typeof recipe.missedIngredientCount === 'number' ? recipe.missedIngredientCount : recipe.missedIngredients.length}
                             </span>
                           )}
                         </div>
