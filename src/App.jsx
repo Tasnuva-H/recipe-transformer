@@ -15,6 +15,10 @@ export default function RecipeTransformer() {
   const [totalResults, setTotalResults] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [remixLoading, setRemixLoading] = useState(false);
+  const [remixResult, setRemixResult] = useState('');
+  const [remixError, setRemixError] = useState('');
+  const [customRemixPrompt, setCustomRemixPrompt] = useState('');
 
   const RESULTS_PER_PAGE = 20;
 
@@ -182,11 +186,62 @@ export default function RecipeTransformer() {
       const data = await response.json();
       setSelectedRecipe(data);
       setView('detail');
+      setRemixResult('');
+      setRemixError('');
+      setCustomRemixPrompt('');
     } catch (err) {
       setError(err.message || 'Failed to load recipe details. Please try again.');
       console.error('Recipe detail error:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const enhancementOptions = [
+    { type: 'low_carb', label: 'Make low-carb' },
+    { type: 'fusion', label: 'Remix as fusion' },
+    { type: 'substitutions', label: 'Ingredient substitutions' },
+    { type: 'spicier', label: 'Make it spicier' },
+    { type: 'higher_protein', label: 'Higher protein' },
+    { type: 'vegetarian', label: 'Make vegetarian' },
+    { type: 'reduce_sodium', label: 'Reduce sodium' },
+    { type: 'kid_friendly', label: 'Kid-friendly' },
+    { type: 'double', label: 'Double the recipe' },
+  ];
+
+  const requestRemix = async (type, customPrompt = null) => {
+    if (!selectedRecipe) return;
+    setRemixLoading(true);
+    setRemixError('');
+    setRemixResult('');
+
+    try {
+      const body = {
+        recipe: {
+          title: selectedRecipe.title,
+          extendedIngredients: selectedRecipe.extendedIngredients || [],
+          analyzedInstructions: selectedRecipe.analyzedInstructions,
+          instructions: selectedRecipe.instructions,
+        },
+        type: type === 'remix' ? 'remix' : type,
+      };
+      if (type === 'remix' && customPrompt) body.customPrompt = customPrompt;
+
+      const response = await fetch('/api/recipes/remix', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Remix failed');
+      }
+      setRemixResult(data.enhanced || '');
+    } catch (err) {
+      setRemixError(err.message || 'Could not enhance recipe. Try again.');
+    } finally {
+      setRemixLoading(false);
     }
   };
 
@@ -549,6 +604,68 @@ export default function RecipeTransformer() {
                     />
                   </div>
                 )}
+
+                {/* Enhance this recipe */}
+                <div className="border-t border-gray-200 pt-6">
+                  <h2 className="text-sm font-semibold text-gray-900 mb-3">
+                    Enhance this recipe
+                  </h2>
+                  <p className="text-gray-500 text-xs mb-4">
+                    Get a revised version: low-carb, fusion, substitutions, or a custom remix.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {enhancementOptions.map((opt) => (
+                      <button
+                        key={opt.type}
+                        type="button"
+                        onClick={() => requestRemix(opt.type)}
+                        disabled={remixLoading}
+                        className="px-3 py-2 bg-[var(--color-sage)]/10 text-[var(--color-sage)] rounded-lg text-sm font-medium hover:bg-[var(--color-sage)]/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="flex gap-2 flex-wrap items-stretch">
+                    <input
+                      type="text"
+                      value={customRemixPrompt}
+                      onChange={(e) => setCustomRemixPrompt(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && requestRemix('remix', customRemixPrompt.trim())}
+                      placeholder="Remix (custom): e.g. make it spicier, higher protein, Italian-Asian fusion..."
+                      className="flex-1 min-w-[200px] px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[var(--color-sage)] focus:border-transparent"
+                      disabled={remixLoading}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => requestRemix('remix', customRemixPrompt.trim())}
+                      disabled={remixLoading || !customRemixPrompt.trim()}
+                      className="px-4 py-2 bg-[var(--color-sage)] text-white rounded-lg text-sm font-medium hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                    >
+                      {remixLoading ? (
+                        <span className="flex items-center gap-2">
+                          <Loader className="w-4 h-4 animate-spin" />
+                          Remixing...
+                        </span>
+                      ) : (
+                        'Remix'
+                      )}
+                    </button>
+                  </div>
+                  {remixError && (
+                    <div className="mt-3 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+                      {remixError}
+                    </div>
+                  )}
+                  {remixResult && (
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-2">Enhanced recipe</h3>
+                      <div className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">
+                        {remixResult}
+                      </div>
+                    </div>
+                  )}
+                </div>
 
                 {/* Nutrition */}
                 {selectedRecipe.nutrition && selectedRecipe.nutrition.nutrients && selectedRecipe.nutrition.nutrients.length > 0 && (
