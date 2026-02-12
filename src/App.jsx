@@ -208,17 +208,17 @@ export default function RecipeTransformer() {
       </div>
 
       {/* Header */}
-      <header className="relative z-10 bg-gray-900 text-white border-b border-gray-800">
-        <div className="max-w-7xl mx-auto px-6 py-6">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--color-sage)]">
-              <ChefHat className="w-6 h-6" />
+      <header className="relative z-10 bg-gradient-to-r from-gray-900 via-[#4a5a3e] to-gray-900 text-white border-b border-[var(--color-sage)]/30 shadow-lg">
+        <div className="max-w-7xl mx-auto px-6 py-8">
+          <div className="flex flex-col items-center justify-center gap-4 text-center sm:flex-row sm:gap-5">
+            <div className="flex items-center justify-center w-14 h-14 rounded-2xl bg-[var(--color-sage)] shadow-md ring-2 ring-white/20">
+              <ChefHat className="w-7 h-7" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">
+              <h1 className="text-3xl font-bold tracking-tight text-white drop-shadow-sm">
                 Recipe Transformer
               </h1>
-              <p className="text-gray-400 text-sm mt-0.5">
+              <p className="text-green-100/90 text-sm mt-1 font-medium">
                 Discover recipes tailored to your ingredients
               </p>
             </div>
