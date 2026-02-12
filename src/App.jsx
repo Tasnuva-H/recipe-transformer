@@ -191,7 +191,7 @@ export default function RecipeTransformer() {
   };
 
   return (
-    <div className="min-h-screen relative bg-slate-50">
+    <div className="min-h-screen relative bg-gray-50">
       {/* Looping background video with slight opacity */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         <video
@@ -199,26 +199,26 @@ export default function RecipeTransformer() {
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover bg-slate-100"
-          style={{ opacity: 0.82 }}
+          className="absolute inset-0 w-full h-full object-cover bg-gray-100"
+          style={{ opacity: 0.22 }}
           src={backgroundVideo}
           aria-hidden
         />
-        <div className="absolute inset-0 bg-slate-50/88" aria-hidden />
+        <div className="absolute inset-0 bg-gray-50/88" aria-hidden />
       </div>
 
       {/* Header */}
-      <header className="relative z-10 bg-slate-900 text-white border-b border-slate-800">
+      <header className="relative z-10 bg-gray-900 text-white border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="flex items-center gap-4">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-indigo-600">
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--color-sage)]">
               <ChefHat className="w-6 h-6" />
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight">
                 Recipe Transformer
               </h1>
-              <p className="text-slate-400 text-sm mt-0.5">
+              <p className="text-gray-400 text-sm mt-0.5">
                 Discover recipes tailored to your ingredients
               </p>
             </div>
@@ -492,11 +492,11 @@ export default function RecipeTransformer() {
                 {/* Summary */}
                 {selectedRecipe.summary && (
                   <div>
-                    <h2 className="text-sm font-semibold text-slate-900 mb-2">
+                    <h2 className="text-sm font-semibold text-gray-900 mb-2">
                       About
                     </h2>
                     <div
-                      className="text-slate-600 text-sm leading-relaxed"
+                      className="text-gray-600 text-sm leading-relaxed"
                       dangerouslySetInnerHTML={{ __html: selectedRecipe.summary }}
                     />
                   </div>
@@ -505,14 +505,14 @@ export default function RecipeTransformer() {
                 {/* Ingredients */}
                 {selectedRecipe.extendedIngredients && selectedRecipe.extendedIngredients.length > 0 && (
                   <div>
-                    <h2 className="text-sm font-semibold text-slate-900 mb-2">
+                    <h2 className="text-sm font-semibold text-gray-900 mb-2">
                       Ingredients
                     </h2>
-                    <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                      <ul className="space-y-2 text-sm text-slate-700">
+                    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                      <ul className="space-y-2 text-sm text-gray-700">
                         {selectedRecipe.extendedIngredients.map((ingredient, index) => (
                           <li key={index} className="flex items-start gap-2">
-                            <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full mt-1.5 flex-shrink-0" />
+                            <span className="w-1.5 h-1.5 bg-[var(--color-sage)] rounded-full mt-1.5 flex-shrink-0" />
                             {ingredient.original}
                           </li>
                         ))}
@@ -524,27 +524,27 @@ export default function RecipeTransformer() {
                 {/* Instructions */}
                 {(selectedRecipe.analyzedInstructions && selectedRecipe.analyzedInstructions.length > 0) ? (
                   <div>
-                    <h2 className="text-sm font-semibold text-slate-900 mb-2">
+                    <h2 className="text-sm font-semibold text-gray-900 mb-2">
                       Instructions
                     </h2>
                     <div className="space-y-4">
                       {selectedRecipe.analyzedInstructions[0].steps.map((step, index) => (
                         <div key={index} className="flex gap-4">
-                          <div className="flex-shrink-0 w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-semibold text-sm">
+                          <div className="flex-shrink-0 w-8 h-8 bg-[var(--color-sage)] rounded-lg flex items-center justify-center text-white font-semibold text-sm">
                             {step.number}
                           </div>
-                          <p className="text-slate-600 text-sm leading-relaxed pt-1">{step.step}</p>
+                          <p className="text-gray-600 text-sm leading-relaxed pt-1">{step.step}</p>
                         </div>
                       ))}
                     </div>
                   </div>
                 ) : selectedRecipe.instructions && (
                   <div>
-                    <h2 className="text-sm font-semibold text-slate-900 mb-2">
+                    <h2 className="text-sm font-semibold text-gray-900 mb-2">
                       Instructions
                     </h2>
                     <div
-                      className="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap"
+                      className="text-gray-600 text-sm leading-relaxed whitespace-pre-wrap"
                       dangerouslySetInnerHTML={{ __html: selectedRecipe.instructions }}
                     />
                   </div>
@@ -553,13 +553,13 @@ export default function RecipeTransformer() {
                 {/* Nutrition */}
                 {selectedRecipe.nutrition && selectedRecipe.nutrition.nutrients && selectedRecipe.nutrition.nutrients.length > 0 && (
                   <div>
-                    <h2 className="text-sm font-semibold text-slate-900 mb-2">
+                    <h2 className="text-sm font-semibold text-gray-900 mb-2">
                       Nutrition (per serving)
                     </h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       {selectedRecipe.nutrition.nutrients.slice(0, 12).map((nutrient, index) => (
-                        <div key={index} className="bg-slate-50 rounded-lg p-3 text-center border border-slate-200">
-                          <div className="text-base font-bold text-indigo-600">
+                        <div key={index} className="bg-gray-50 rounded-lg p-3 text-center border border-gray-200">
+                          <div className="text-base font-bold text-[var(--color-sage)]">
                             {Number.isInteger(nutrient.amount) ? nutrient.amount : Math.round(nutrient.amount * 10) / 10}{nutrient.unit}
                           </div>
                           <div className="text-xs text-gray-500 mt-0.5">{nutrient.name}</div>
