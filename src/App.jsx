@@ -8,6 +8,7 @@ export default function RecipeTransformer() {
   const [excludeIngredientsQuery, setExcludeIngredientsQuery] = useState('');
   const [selectedDiets, setSelectedDiets] = useState([]);
   const [selectedIntolerances, setSelectedIntolerances] = useState([]);
+  const [selectedCuisine, setSelectedCuisine] = useState('');
   const [recipes, setRecipes] = useState([]);
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [totalResults, setTotalResults] = useState(0);
@@ -62,6 +63,40 @@ export default function RecipeTransformer() {
     'Wheat',
   ];
 
+  const cuisineOptions = [
+    '',
+    'African',
+    'Asian',
+    'American',
+    'British',
+    'Cajun',
+    'Caribbean',
+    'Chinese',
+    'Eastern European',
+    'European',
+    'French',
+    'German',
+    'Greek',
+    'Indian',
+    'Irish',
+    'Italian',
+    'Japanese',
+    'Jewish',
+    'Korean',
+    'Latin American',
+    'Mediterranean',
+    'Mexican',
+    'Middle Eastern',
+    'Nordic',
+    'Southern',
+    'Spanish',
+    'Thai',
+    'Vietnamese',
+  ];
+
+  const cuisineToApiValue = (label) =>
+    label ? label.toLowerCase().replace(/\s+/g, ' ').trim() : '';
+
   const intoleranceToApiValue = (label) =>
     label.toLowerCase().replace(/\s+/g, ' ').trim();
 
@@ -103,6 +138,9 @@ export default function RecipeTransformer() {
       }
       if (excludeIngredientsQuery.trim()) {
         params.set('excludeIngredients', excludeIngredientsQuery.trim());
+      }
+      if (selectedCuisine) {
+        params.set('cuisine', cuisineToApiValue(selectedCuisine));
       }
       const response = await fetch(`/api/recipes/by-ingredients?${params.toString()}`);
 
@@ -223,6 +261,23 @@ export default function RecipeTransformer() {
                   </button>
                 ))}
               </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Georgia, serif' }}>
+                Cuisine
+              </h3>
+              <p className="text-sm text-gray-600 mb-3">
+                Optional. Filter by cuisine type.
+              </p>
+              <select
+                value={selectedCuisine}
+                onChange={(e) => setSelectedCuisine(e.target.value)}
+                className="w-full max-w-md px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-orange-500 focus:outline-none transition-all bg-white mb-8"
+              >
+                {cuisineOptions.map((cuisine) => (
+                  <option key={cuisine || 'any'} value={cuisine}>
+                    {cuisine || 'Any cuisine'}
+                  </option>
+                ))}
+              </select>
               <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2" style={{ fontFamily: 'Georgia, serif' }}>
                 Intolerances
               </h3>
