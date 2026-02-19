@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { Search, ChefHat, Clock, Filter, ChevronLeft, Loader } from 'lucide-react';
 import backgroundVideo from './background-video.mp4';
 
+// In production, set REACT_APP_API_URL to your backend URL (e.g. https://your-backend.onrender.com)
+const API_BASE = process.env.REACT_APP_API_URL || '';
+
 export default function RecipeTransformer() {
   const [view, setView] = useState('search'); // 'search', 'results', 'detail'
   const [ingredientsQuery, setIngredientsQuery] = useState('');
@@ -147,7 +150,7 @@ export default function RecipeTransformer() {
       if (selectedCuisine) {
         params.set('cuisine', cuisineToApiValue(selectedCuisine));
       }
-      const response = await fetch(`/api/recipes/by-ingredients?${params.toString()}`);
+      const response = await fetch(`${API_BASE}/api/recipes/by-ingredients?${params.toString()}`);
 
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
@@ -178,7 +181,7 @@ export default function RecipeTransformer() {
     setError('');
 
     try {
-      const response = await fetch(`/api/recipes/${recipeId}?includeNutrition=true`);
+      const response = await fetch(`${API_BASE}/api/recipes/${recipeId}?includeNutrition=true`);
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
         throw new Error(errData.message || 'Failed to fetch recipe details');
@@ -227,7 +230,7 @@ export default function RecipeTransformer() {
       };
       if (type === 'remix' && customPrompt) body.customPrompt = customPrompt;
 
-      const response = await fetch('/api/recipes/remix', {
+      const response = await fetch(`${API_BASE}/api/recipes/remix`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
