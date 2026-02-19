@@ -257,7 +257,7 @@ export default function RecipeTransformer() {
           muted
           playsInline
           className="absolute inset-0 w-full h-full object-cover bg-gray-100"
-          style={{ opacity: 0.22 }}
+          style={{ opacity: 0.8 }}
           src={backgroundVideo}
           aria-hidden
         />
