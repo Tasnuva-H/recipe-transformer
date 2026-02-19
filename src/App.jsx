@@ -8,7 +8,6 @@ const API_BASE = process.env.REACT_APP_API_URL || '';
 export default function RecipeTransformer() {
   const [view, setView] = useState('search'); // 'search', 'results', 'detail'
   const [ingredientsQuery, setIngredientsQuery] = useState('');
-  const [ignorePantry, setIgnorePantry] = useState(true);
   const [excludeIngredientsQuery, setExcludeIngredientsQuery] = useState('');
   const [selectedDiets, setSelectedDiets] = useState([]);
   const [selectedIntolerances, setSelectedIntolerances] = useState([]);
@@ -136,7 +135,7 @@ export default function RecipeTransformer() {
       const params = new URLSearchParams({
         ingredients: trimmed,
         number: String(RESULTS_PER_PAGE),
-        ignorePantry: String(ignorePantry),
+        ignorePantry: 'true',
       });
       if (selectedDiets.length > 0) {
         params.set('diet', selectedDiets.map(dietToApiValue).join(','));
@@ -372,18 +371,9 @@ export default function RecipeTransformer() {
                 ))}
               </div>
               <div className="space-y-4">
-                <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
-                  <input
-                    type="checkbox"
-                    checked={ignorePantry}
-                    onChange={(e) => setIgnorePantry(e.target.checked)}
-                    className="rounded border-gray-300 text-[var(--color-sage)] focus:ring-[var(--color-sage)]"
-                  />
-                  Ignore pantry staples (salt, water, flour, etc.)
-                </label>
                 <div>
                   <label className="block text-sm font-semibold text-gray-900 mb-2">
-                    Ingredients to ignore
+                    Ingredients you'd like to exclude? (optional)
                   </label>
                   <input
                     type="text"
